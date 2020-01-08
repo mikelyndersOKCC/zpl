@@ -25,7 +25,7 @@ class Label:
     printer dot units.
     '''
 
-    def __init__(self, height, width=110.0, dpmm=12.0):
+    def __init__(self, height, width=110.0, dpmm=12.0, rotate_180='Y'):
         """
         Creates one (or more) ZPL2 labels.
 
@@ -37,6 +37,8 @@ class Label:
         self.dpmm = dpmm
 
         self.code = "^XA"
+
+        if rotate_180: self.code += "^POI"
 
     def origin(self, x,y):
         """
@@ -269,6 +271,8 @@ def __main__():
 
     print(label.dumpZPL())
     label.preview()
+
+    
 
 
 if __name__ == "__main__":
