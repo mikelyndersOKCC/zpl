@@ -181,7 +181,7 @@ class Label:
             self.code += '"%s"' % name
 
     def write_barcode(self, height, barcode_type, orientation='N', check_digit='N',
-                       print_interpretation_line='Y', print_interpretation_line_above='N'):
+                       print_interpretation_line='Y', print_interpretation_line_above='N', thin_bar_width=None):
         # guard for only currently allowed bar codes
         assert barcode_type in ['2', '3', 'U'], "invalid barcode type"
 
@@ -201,7 +201,9 @@ class Label:
                                                    print_interpretation_line_above,
                                                    check_digit)
 
-        self.code += barcode_zpl
+        bar_width_modifier = '^BY%s' % (thin_bar_width) if thin_bar_width else ""
+
+        self.code += bar_width_modifier + barcode_zpl
 
     def dumpZPL(self):
         return self.code+"^XZ"
@@ -225,34 +227,48 @@ class Label:
 
 
 def __main__():
-    l = Label(100,60)
-    height = 0
-    l.origin(0,0)
-    l.write_text("Problem?", char_height=10, char_width=8, line_width=60, justification='C')
-    l.endorigin()
+    serial_number = '12345-1'
+    image_path = "BLP-wf"
+    job_number = "M043737"
+    part_number = "OKC-2975"
 
-    height += 13
-    image_width = 5
-    l.origin((l.width-image_width)/2, height)
-    image_height = l.write_graphic(
-        Image.open(os.path.join(os.path.dirname(__file__), 'trollface-large.png')),
-        image_width)
-    l.endorigin()
+    left_margin = 10
 
-    height += image_height + 5
-    l.origin(22, height)
-    l.write_barcode(height=70, barcode_type='U', check_digit='Y')
-    l.write_text('07000002198')
-    l.endorigin()
+    label = Label(65,90)
 
-    height += 20
-    l.origin(0, height)
-    l.write_text('Happy Troloween!', char_height=5, char_width=4, line_width=60,
-                 justification='C')
-    l.endorigin()
+    label.origin(left_margin,20)
+    label.write_text(f"PN: {part_number}", char_height=5, char_width=4,justification='L')
+    label.endorigin()
 
-    print(l.dumpZPL())
-    l.preview()
+    label.origin(left_margin,25)
+    label.write_barcode(height=50, barcode_type='3', print_interpretation_line='N', thin_bar_width='3')
+    label.write_text(part_number)
+    label.endorigin()
+
+    label.origin(left_margin,30)
+    label.write_text(f"QTY: 1", char_height=5, char_width=4,justification='L')
+    label.endorigin()
+
+    label.origin(left_margin,35)
+    label.write_text(f"Lot #: {job_number}", char_height=5, char_width=4,justification='L')
+    label.endorigin()
+
+    label.origin(left_margin,40)
+    label.write_barcode(height=50, barcode_type='3', print_interpretation_line='N', thin_bar_width='3')
+    label.write_text(job_number)
+    label.endorigin()
+
+    label.origin(left_margin,45)
+    label.write_text(f"SN: {serial_number}", char_height=5, char_width=4,justification='L')
+    label.endorigin()
+
+
+    label.origin(50,35)
+    label.write_graphic(Image.open('/home/mikelynders/part_images/' + image_path + '.bmp'), 35)
+    label.endorigin()
+
+    print(label.dumpZPL())
+    label.preview()
 
 
 if __name__ == "__main__":
