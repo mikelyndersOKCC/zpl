@@ -25,7 +25,7 @@ class Label:
     printer dot units.
     '''
 
-    def __init__(self, height, width=110.0, dpmm=12.0, rotate_180='Y'):
+    def __init__(self, height, width=110.0, dpmm=12.0, rotate_180=False):
         """
         Creates one (or more) ZPL2 labels.
 
