@@ -234,7 +234,7 @@ def __main__():
     job_number = "M043737"
     part_number = "OKC-2975"
 
-    left_margin = 10
+    left_margin = 0
 
     label = Label(65,90)
 
